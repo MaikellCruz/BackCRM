@@ -1,30 +1,34 @@
 # app/users/controller.py
-from fastapi import APIRouter, HTTPException, status
-from .usermodels import UserCreate, UserPublic, UserUpdate
+
+from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
+from database import get_db # [CORRIGIDO] Importa get_db do local central
+from . import user_service, user_model
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-# Simulação de um banco de dados em memória
-fake_db = {
-    1: {"id": 1, "email": "user1@example.com", "full_name": "User One", "password": "password1"},
-    2: {"id": 2, "email": "user2@example.com", "full_name": "User Two", "password": "password2"},
-}
+# # Simulação de um banco de dados em memória
+# fake_db = {
+#     1: {"id": 1, "email": "user1@example.com", "full_name": "User One", "password": "password1"},
+#     2: {"id": 2, "email": "user2@example.com", "full_name": "User Two", "password": "password2"},
+# }
 
-@router.post("/", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate):
+@router.post("/", response_model=user_model.UserPublic, status_code=status.HTTP_201_CREATED)
+def create_user(user: user_model.UserCreate, db: Session = Depends(get_db)):
     new_id = max(fake_db.keys() or [0]) + 1
     new_user_data = user.model_dump()
     new_user_data["id"] = new_id
     fake_db[new_id] = new_user_data
-    return UserPublic(**new_user_data)
+    return user_model.UserPublic(**new_user_data)
 
-@router.get("/", response_model=list[UserPublic])
+@router.get("/", response_model=list[user_model.UserPublic])
 def list_users():
     # Converte os dicionários do 'banco de dados' para o modelo público
-    return [UserPublic(**user_data) for user_data in fake_db.values()]
+    return [user_model.UserPublic(**user_data) for user_data in fake_db.values()]
 
-@router.put("/{user_id}", response_model=UserPublic)
-def update_user(user_id: int, user_update: UserUpdate):
+@router.put("/{user_id}", response_model=user_model.UserPublic)
+def update_user(user_id: int, user_update: user_model.UserUpdate):
     if user_id not in fake_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
