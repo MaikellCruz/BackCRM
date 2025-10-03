@@ -4,6 +4,8 @@ from fastapi import FastAPI
 
 from clients import clientcontroller
 from users import usercontroller
+from roles import role_controller
+from auth import auth_controller
 from database import engine, Base
 
 # Linha mágica que instrui o SQLAlchemy a criar todas as tabelas
@@ -19,6 +21,8 @@ app = FastAPI(
 
 app.include_router(usercontroller.router)
 app.include_router(clientcontroller.router)
+app.include_router(role_controller.router)
+app.include_router(auth_controller.router)
 
 # @app.get("/")
 # def read_root():
