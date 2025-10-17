@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 # app/users/user_repository.py
 
+=======
+# users/user_repository.py
+>>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182
 from sqlalchemy.orm import Session
 from . import user_model
 from security import get_password_hash
 
 # --- FUNÇÕES DE LEITURA (READ) ---
+<<<<<<< HEAD
 
 def get_user(db: Session, user_id: int):
     """
@@ -37,11 +42,26 @@ def create_user(db: Session, user: user_model.UserCreate, role_id: int = None):
 
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
+=======
+def get_user(db: Session, user_id: int):
+    return db.query(user_model.User).filter(user_model.User.id == user_id).first()
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(user_model.User).filter(user_model.User.email == email).first()
+
+def get_users(db: Session):
+    return db.query(user_model.User).all()
+
+# --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
+def create_user(db: Session, user: user_model.UserCreate, role_id: int):
+    hashed_password = get_password_hash(user.password)
+>>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182
     db_user = user_model.User(
         email=user.email, 
         hashed_password=hashed_password, 
         full_name=user.full_name,
         profile_image_url=user.profile_image_url,
+<<<<<<< HEAD
         profile_image_base64=user.profile_image_base64,
         role_id=role_id
     )
@@ -74,4 +94,30 @@ def delete_user(db: Session, db_user: user_model.User):
     """Deleta um usuário do banco de dados."""
     db.delete(db_user) # Marca o objeto para deleção.
     db.commit()        # Efetiva a deleção no banco.
+=======
+        role_id=role_id
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+# --- FUNÇÃO DE ATUALIZAÇÃO (UPDATE) ---
+def update_user(db: Session, db_user: user_model.User, user_in: user_model.UserUpdate):
+    update_data = user_in.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+         if key == "password":
+             setattr(db_user, "hashed_password", get_password_hash(value))
+         else:
+             setattr(db_user, key, value)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+# --- FUNÇÃO DE DELEÇÃO (DELETE) ---
+def delete_user(db: Session, db_user: user_model.User):
+    db.delete(db_user)
+    db.commit()
+>>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182
     return db_user
