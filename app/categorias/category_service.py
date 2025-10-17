@@ -1,0 +1,63 @@
+# app/categorys/category_service.py
+
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from . import category_model, category_repository
+from utils.image_processor import process_image_base64
+
+def create_new_category(db: Session, category: category_model.categoryCreate):
+    db_category = category_repository.get_category_by_email(db, email=category.email)
+    if db_category:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+    # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
+    try:
+        processed_image = process_image_base64(category.profile_image_base64)
+        # Cria uma cópia dos dados do usuário com a imagem processada
+        category_data = category.model_copy()
+        category_data.profile_image_base64 = processed_image
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"Erro no processamento da imagem: {e}"
+        )
+
+    return category_repository.create_category(db=db, category=category_data, role_id=category.role_id)
+
+def get_all_categorys(db: Session):
+    """Serviço para listar todas as categorias. Neste caso, apenas repassa a chamada."""
+    return category_repository.get_categorys(db)
+
+def get_category_by_id(db: Session, category_id: int):
+    """Serviço para buscar uma categoria pelo ID, com tratamento de erro."""
+    db_category = category_repository.get_category(db, category_id=category_id)
+    # REGRA DE NEGÓCIO: Se a cateogira não for encontrada, retornar um erro 404.
+    if db_category is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="category not found")
+    return db_category
+
+def update_existing_category(db: Session, category_id: int, category_in: category_model.categoryUpdate):
+    """Serviço para atualizar uma categoria, com tratamento de erro."""
+    db_category = get_category_by_id(db, category_id) # Reutiliza a lógica para buscar e checar se o usuário existe.
+    
+    # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
+    if category_in.profile_image_base64:
+        try:
+            processed_image = process_image_base64(category_in.profile_image_base64)
+            # Cria uma cópia dos dados com a imagem processada
+            category_data = category_in.model_copy()
+            category_data.profile_image_base64 = processed_image
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Erro no processamento da imagem: {e}"
+            )
+    else:
+        category_data = category_in
+    
+    return category_repository.update_category(db=db, db_category=db_category, category_in=category_data)
+
+def delete_category_by_id(db: Session, category_id: int):
+    """Serviço para deletar uma categoria, com tratamento de erro."""
+    db_category = get_category_by_id(db, category_id) # Reutiliza a lógica para buscar e checar se o usuário existe.
+    return category_repository.delete_category(db=db, db_category=db_category)

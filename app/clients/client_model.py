@@ -1,20 +1,28 @@
 # users/user_model.py
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 from database import Base
 from roles.role_model import RolePublic # Importa o schema público de Role
+from typing import Optional
 
 # ==================================
 # MODELO DA TABELA (SQLAlchemy)
 # ==================================
-class User(Base):
+class Client(Base):
     __tablename__ = "users"
+    __table_args__ = {'extend_existing': True}
+    
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     full_name = Column(String, index=True, nullable=True)
+    enterprise_name = Column(String, index=True, nullable=True)
+    cel_number = Column(Integer, index=True, nullable=True)
+    adress = Column(String, index=True, nullable=True)
+    #category = Column(String, index=True, nullable=True)
     profile_image_url = Column(String, nullable=True)
+    profile_image_base64 = Column(Text, nullable=True)
     # Chave estrangeira que aponta para a tabela 'roles'
     role_id = Column(Integer, ForeignKey("roles.id"))
     # Cria a relação para que possamos acessar o objeto Role a partir de um User
@@ -23,22 +31,25 @@ class User(Base):
 # ==================================
 # SCHEMAS (Pydantic)
 # ==================================
-class UserCreate(BaseModel):
+class ClientCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     full_name: str | None = Field(default=None, min_length=3)
-    profile_image_url: str | None = None
-    role_id: int = Field(description="ID do role a ser associado ao usuário")
+    profile_image_url: Optional[str] = None
+    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
+    role_id: int = Field(description="ID do role a ser associado ao client")
 
-class UserUpdate(BaseModel):
+class ClientUpdate(BaseModel):
     full_name: str | None = Field(default=None, min_length=3)
-    profile_image_url: str | None = None
+    profile_image_url: Optional[str] = None
+    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
 
-class UserPublic(BaseModel):
+class ClientPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-
+    
     id: int
     email: EmailStr
     full_name: str | None = None
-    profile_image_url: str | None = None
+    profile_image_url: Optional[str] = None
+    profile_image_base64: Optional[str] = None
     role: RolePublic # O perfil agora é um objeto aninhado

@@ -1,15 +1,22 @@
-# users/user_controller.py
+# app/users/user_controller.py
+
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
-from database import get_db
+from database import SessionLocal, get_db
 from . import user_service, user_model
+from auth.auth_service import get_current_user
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+    dependencies=[Depends(get_current_user)]
+)
 
 @router.post("/", response_model=user_model.UserPublic, status_code=status.HTTP_201_CREATED)
 def create_user(user: user_model.UserCreate, db: Session = Depends(get_db)):
-    """Endpoint para criar um novo usuário."""
+    """Endpoint para criar um novo usuário. Recebe os dados validados (user)
+    e a sessão do banco (db) através da injeção de dependência."""
     return user_service.create_new_user(db=db, user=user)
 
 @router.get("/", response_model=List[user_model.UserPublic])

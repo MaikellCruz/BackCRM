@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 # 1. Define a string de conexão com o banco PostgreSQL.
 #    Formato: "postgresql://<user>:<password>@<host>/<dbname>"
 #    Substitua com suas credenciais. É uma boa prática usar variáveis de ambiente aqui.
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@localhost/programacaoiii_db"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:123456@10.5.10.10/PWIII_Maikell"
 
 # 2. Cria a "engine" do SQLAlchemy, que é o ponto de entrada para o banco de dados.
 #    Ela gerencia as conexões com o banco.
