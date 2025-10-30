@@ -1,7 +1,7 @@
 # Categorys/user_model.py
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from database import Base
 from roles.role_model import RolePublic # Importa o schema público de Role
 from typing import Optional
@@ -14,11 +14,9 @@ class Category(Base):
     __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    full_name = Column(String, index=True, nullable=True)
-    profile_image_url = Column(String, nullable=True)
-    profile_image_base64 = Column(Text, nullable=True)
+    nome = Column(String, unique=True, index=True)
+    tipo = Column(String, unique=True, index=True)
+    descricao = Column(String, unique=True, index=True)
     # Chave estrangeira que aponta para a tabela 'roles'
     role_id = Column(Integer, ForeignKey("roles.id"))
     # Cria a relação para que possamos acessar o objeto Role a partir de um Category
@@ -28,24 +26,21 @@ class Category(Base):
 # SCHEMAS (Pydantic)
 # ==================================
 class CategoryCreate(BaseModel):
-    email: EmailStr
-    password: str = Field(min_length=8)
-    full_name: str | None = Field(default=None, min_length=3)
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
+    nome: str | None = Field(default=None, min_length=3)
+    tipo: str | None = Field(default=None, min_length=3)
+    descrição: str | None = Field(default=None, min_length=3)
     role_id: int = Field(description="ID do role a ser associado a categoria")
 
 class CategoryUpdate(BaseModel):
-    full_name: str | None = Field(default=None, min_length=3)
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
+    nome: str | None = Field(default=None, min_length=3)
+    tipo: str | None = Field(default=None, min_length=3)
+    descrição: str | None = Field(default=None, min_length=3)
 
 class CategoryPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     id: int
-    email: EmailStr
-    full_name: str | None = None
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = None
+    nome: str | None = Field(default=None, min_length=3)
+    tipo: str | None = Field(default=None, min_length=3)
+    descrição: str | None = Field(default=None, min_length=3)
     role: RolePublic # O perfil agora é um objeto aninhado

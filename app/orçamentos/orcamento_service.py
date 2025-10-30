@@ -5,10 +5,10 @@ from fastapi import HTTPException, status
 from . import orcamento_repository, orcamento_model
 from utils.image_processor import process_image_base64
 
-def create_new_orcamento(db: Session, orcamento: orcamento_model.orcamentoCreate):
-    db_orcamento = orcamento_repository.get_orcamento_by_email(db, email=orcamento.email)
+def create_new_orcamento(db: Session, orcamento: orcamento_model.OrcamentoCreate):
+    db_orcamento = orcamento_repository.get_orcamento_by_name(db, email=orcamento.name)
     if db_orcamento:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Name already registered")
 
     # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
     try:
@@ -36,7 +36,7 @@ def get_orcamento_by_id(db: Session, orcamento_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="orcamento not found")
     return db_orcamento
 
-def update_existing_orcamento(db: Session, orcamento_id: int, orcamento_in: orcamento_model.orcamentoUpdate):
+def update_existing_orcamento(db: Session, orcamento_id: int, orcamento_in: orcamento_model.OrcamentoUpdate):
     """Serviço para atualizar um orcamento, com tratamento de erro."""
     db_orcamento = get_orcamento_by_id(db, orcamento_id) # Reutiliza a lógica para buscar e checar se o orcamento existe.
     

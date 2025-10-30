@@ -35,12 +35,19 @@ class ClientCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     full_name: str | None = Field(default=None, min_length=3)
+    enterprise_name = Column(String, index=True, nullable=True)
+    cel_number = Column(Integer, index=True, nullable=True)
+    adress = Column(String, index=True, nullable=True)
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
     role_id: int = Field(description="ID do role a ser associado ao client")
 
 class ClientUpdate(BaseModel):
+    email: EmailStr
     full_name: str | None = Field(default=None, min_length=3)
+    enterprise_name = Column(String, index=True, nullable=True)
+    cel_number = Column(Integer, index=True, nullable=True)
+    adress = Column(String, index=True, nullable=True)
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
 
@@ -50,6 +57,9 @@ class ClientPublic(BaseModel):
     id: int
     email: EmailStr
     full_name: str | None = None
+    enterprise_name: str | None = None
+    cel_number: Integer | None = None
+    adress: str | None = None
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = None
     role: RolePublic # O perfil agora é um objeto aninhado

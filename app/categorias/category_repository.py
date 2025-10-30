@@ -15,9 +15,9 @@ def get_category(db: Session, category_id: int):
     """
     return db.query(category_model.Category).filter(category_model.Category.id == category_id).first()
 
-def get_category_by_email(db: Session, email: str):
+def get_category_by_name(db: Session, nome: str):
     """Busca uma única categoria pelo seu e-mail."""
-    return db.query(category_model.Category).filter(category_model.Category.email == email).first()
+    return db.query(category_model.Category).filter(category_model.Category.nome == nome).first()
 
 def get_categorys(db: Session):
     """
@@ -28,7 +28,7 @@ def get_categorys(db: Session):
 
 # --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
 
-def create_category(db: Session, category: category_model.categoryCreate, role_id: int = None):
+def create_category(db: Session, category: category_model.CategoryCreate, role_id: int = None):
     """
     Cria uma nova categoria no banco de dados.
     """
@@ -38,11 +38,10 @@ def create_category(db: Session, category: category_model.categoryCreate, role_i
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
     db_category = category_model.Category(
-        email=category.email, 
+        nome=category.nome, 
         hashed_password=hashed_password, 
-        full_name=category.full_name,
-        profile_image_url=category.profile_image_url,
-        profile_image_base64=category.profile_image_base64,
+        tipo=category.tipo,
+        descricao=category.descrição,
         role_id=role_id
     )
 
@@ -53,7 +52,7 @@ def create_category(db: Session, category: category_model.categoryCreate, role_i
 
 # --- FUNÇÃO DE ATUALIZAÇÃO (UPDATE) ---
 
-def update_category(db: Session, db_category: category_model.Category, category_in: category_model.categoryUpdate):
+def update_category(db: Session, db_category: category_model.Category, category_in: category_model.CategoryUpdate):
     """Atualiza os dados de uma categoria existente."""
     update_data = category_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():

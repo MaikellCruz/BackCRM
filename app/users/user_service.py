@@ -1,23 +1,15 @@
-<<<<<<< HEAD
 # app/users/user_service.py
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from . import user_repository, user_model
 from utils.image_processor import process_image_base64
-=======
-# users/user_service.py
-from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from . import user_repository, user_model
->>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182
 
 def create_new_user(db: Session, user: user_model.UserCreate):
     db_user = user_repository.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
-<<<<<<< HEAD
     # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
     try:
         processed_image = process_image_base64(user.profile_image_base64)
@@ -40,22 +32,11 @@ def get_user_by_id(db: Session, user_id: int):
     """Serviço para buscar um usuário pelo ID, com tratamento de erro."""
     db_user = user_repository.get_user(db, user_id=user_id)
     # REGRA DE NEGÓCIO: Se o usuário não for encontrado, retornar um erro 404.
-=======
-    # A lógica de buscar o role foi removida, pois o ID agora vem do controller
-    return user_repository.create_user(db=db, user=user, role_id=user.role_id)
-
-def get_all_users(db: Session):
-    return user_repository.get_users(db)
-
-def get_user_by_id(db: Session, user_id: int):
-    db_user = user_repository.get_user(db, user_id=user_id)
->>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
 def update_existing_user(db: Session, user_id: int, user_in: user_model.UserUpdate):
-<<<<<<< HEAD
     """Serviço para atualizar um usuário, com tratamento de erro."""
     db_user = get_user_by_id(db, user_id) # Reutiliza a lógica para buscar e checar se o usuário existe.
     
@@ -80,11 +61,3 @@ def delete_user_by_id(db: Session, user_id: int):
     """Serviço para deletar um usuário, com tratamento de erro."""
     db_user = get_user_by_id(db, user_id) # Reutiliza a lógica para buscar e checar se o usuário existe.
     return user_repository.delete_user(db=db, db_user=db_user)
-=======
-    db_user = get_user_by_id(db, user_id)
-    return user_repository.update_user(db=db, db_user=db_user, user_in=user_in)
-
-def delete_user_by_id(db: Session, user_id: int):
-    db_user = get_user_by_id(db, user_id)
-    return user_repository.delete_user(db=db, db_user=db_user)
->>>>>>> 3ab0099970bb5caefa0bfc53733f13d068e94182

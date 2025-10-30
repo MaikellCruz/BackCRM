@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from . import client_repository, client_model
 from utils.image_processor import process_image_base64
 
-def create_new_client(db: Session, client: client_model.clientCreate):
+def create_new_client(db: Session, client: client_model.ClientCreate):
     db_client = client_repository.get_client_by_email(db, email=client.email)
     if db_client:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
@@ -36,7 +36,7 @@ def get_client_by_id(db: Session, client_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="client not found")
     return db_client
 
-def update_existing_client(db: Session, client_id: int, client_in: client_model.clientUpdate):
+def update_existing_client(db: Session, client_id: int, client_in: client_model.ClientUpdate):
     """Serviço para atualizar um cliente, com tratamento de erro."""
     db_client = get_client_by_id(db, client_id) # Reutiliza a lógica para buscar e checar se o cliente existe.
     

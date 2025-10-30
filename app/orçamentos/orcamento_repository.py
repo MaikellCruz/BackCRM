@@ -13,11 +13,11 @@ def get_orcamento(db: Session, orcamento_id: int):
     .filter(orcamento_model.orcamento.id == orcamento_id): Filtra os resultados onde o id seja igual ao fornecido.
     .first(): Retorna o primeiro resultado encontrado ou None se não encontrar.
     """
-    return db.query(orcamento_model.orcamento).filter(orcamento_model.orcamento.id == orcamento_id).first()
+    return db.query(orcamento_model.orcamento).filter(orcamento_model.Orcamento.id == orcamento_id).first()
 
 def get_orcamento_by_email(db: Session, email: str):
     """Busca um único orcamento pelo seu e-mail."""
-    return db.query(orcamento_model.orcamento).filter(orcamento_model.orcamento.email == email).first()
+    return db.query(orcamento_model.orcamento).filter(orcamento_model.Orcamento.email == email).first()
 
 def get_orcamentos(db: Session):
     """
@@ -28,7 +28,7 @@ def get_orcamentos(db: Session):
 
 # --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
 
-def create_orcamento(db: Session, orcamento: orcamento_model.orcamentoCreate, role_id: int = None):
+def create_orcamento(db: Session, orcamento: orcamento_model.OrcamentoCreate, role_id: int = None):
     """
     Cria um novo orcamento no banco de dados.
     """
@@ -37,10 +37,12 @@ def create_orcamento(db: Session, orcamento: orcamento_model.orcamentoCreate, ro
 
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
-    db_orcamento = orcamento_model.orcamento(
-        email=orcamento.email, 
+    db_orcamento = orcamento_model.Orcamento(
+        name=orcamento.name,
+        value=orcamento.value, 
         hashed_password=hashed_password, 
-        full_name=orcamento.full_name,
+        date=orcamento.date,
+        descr=orcamento.descr,
         profile_image_url=orcamento.profile_image_url,
         profile_image_base64=orcamento.profile_image_base64,
         role_id=role_id
@@ -53,7 +55,7 @@ def create_orcamento(db: Session, orcamento: orcamento_model.orcamentoCreate, ro
 
 # --- FUNÇÃO DE ATUALIZAÇÃO (UPDATE) ---
 
-def update_orcamento(db: Session, db_orcamento: orcamento_model.orcamento, orcamento_in: orcamento_model.orcamentoUpdate):
+def update_orcamento(db: Session, db_orcamento: orcamento_model.Orcamento, orcamento_in: orcamento_model.OrcamentoUpdate):
     """Atualiza os dados de um orcamento existente."""
     update_data = orcamento_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():
@@ -70,7 +72,7 @@ def update_orcamento(db: Session, db_orcamento: orcamento_model.orcamento, orcam
 
 # --- FUNÇÃO DE DELEÇÃO (DELETE) ---
 
-def delete_orcamento(db: Session, db_orcamento: orcamento_model.orcamento):
+def delete_orcamento(db: Session, db_orcamento: orcamento_model.Orcamento):
     """Deleta um orcamento do banco de dados."""
     db.delete(db_orcamento) # Marca o objeto para deleção.
     db.commit()        # Efetiva a deleção no banco.

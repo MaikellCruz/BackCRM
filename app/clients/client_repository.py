@@ -13,22 +13,22 @@ def get_client(db: Session, client_id: int):
     .filter(client_model.client.id == client_id): Filtra os resultados onde o id seja igual ao fornecido.
     .first(): Retorna o primeiro resultado encontrado ou None se não encontrar.
     """
-    return db.query(client_model.client).filter(client_model.client.id == client_id).first()
+    return db.query(client_model.Client).filter(client_model.Client.id == client_id).first()
 
 def get_client_by_email(db: Session, email: str):
     """Busca um único cliente pelo seu e-mail."""
-    return db.query(client_model.client).filter(client_model.client.email == email).first()
+    return db.query(client_model.Client).filter(client_model.Client.email == email).first()
 
 def get_clients(db: Session):
     """
     Busca todos os clientes cadastrados no banco de dados.
     .all(): Retorna uma lista com todos os resultados da consulta.
     """
-    return db.query(client_model.client).all()
+    return db.query(client_model.Client).all()
 
 # --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
 
-def create_client(db: Session, client: client_model.clientCreate, role_id: int = None):
+def create_client(db: Session, client: client_model.ClientCreate, role_id: int = None):
     """
     Cria um novo cliente no banco de dados.
     """
@@ -37,10 +37,13 @@ def create_client(db: Session, client: client_model.clientCreate, role_id: int =
 
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
-    db_client = client_model.client(
+    db_client = client_model.Client(
         email=client.email, 
         hashed_password=hashed_password, 
         full_name=client.full_name,
+        enterprise_name=client.enterprise_name,
+        cel_number=client.cel_number,
+        adress=client.adress,
         profile_image_url=client.profile_image_url,
         profile_image_base64=client.profile_image_base64,
         role_id=role_id
@@ -53,7 +56,7 @@ def create_client(db: Session, client: client_model.clientCreate, role_id: int =
 
 # --- FUNÇÃO DE ATUALIZAÇÃO (UPDATE) ---
 
-def update_client(db: Session, db_client: client_model.client, client_in: client_model.clientUpdate):
+def update_client(db: Session, db_client: client_model.Client, client_in: client_model.ClientUpdate):
     """Atualiza os dados de um cliente existente."""
     update_data = client_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():
@@ -70,7 +73,7 @@ def update_client(db: Session, db_client: client_model.client, client_in: client
 
 # --- FUNÇÃO DE DELEÇÃO (DELETE) ---
 
-def delete_client(db: Session, db_client: client_model.client):
+def delete_client(db: Session, db_client: client_model.Client):
     """Deleta um cliente do banco de dados."""
     db.delete(db_client) # Marca o objeto para deleção.
     db.commit()        # Efetiva a deleção no banco.

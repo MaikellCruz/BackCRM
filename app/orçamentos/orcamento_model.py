@@ -16,7 +16,8 @@ class Orcamento(Base):
     id = Column(Integer, primary_key=True, index=True)
     value = Column(Integer, unique=True, index=True)
     hashed_password = Column(String)
-    description= Column(String, index=True, nullable=True)
+    date = Column(Integer, unique=True, index=True)
+    descr= Column(String, index=True, nullable=True)
     #category = Column(String, index=True, nullable=True)
     profile_image_url = Column(String, nullable=True)
     profile_image_base64 = Column(Text, nullable=True)
@@ -29,15 +30,20 @@ class Orcamento(Base):
 # SCHEMAS (Pydantic)
 # ==================================
 class OrcamentoCreate(BaseModel):
-    email: EmailStr
+    name: str = Field(min_length=8)
+    value: Integer | None = Field(default=None, min_length=3)
     password: str = Field(min_length=8)
-    full_name: str | None = Field(default=None, min_length=3)
+    date: str | None = Field(default=None, min_length=3)
+    descr: str | None = Field(default=None, min_length=3)
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
     role_id: int = Field(description="ID do role a ser associado ao usuário")
 
 class OrcamentoUpdate(BaseModel):
-    full_name: str | None = Field(default=None, min_length=3)
+    name: str = Field(min_length=8)
+    value: Integer | None = Field(default=None, min_length=3)
+    date: str | None = Field(default=None, min_length=3)
+    descr: str | None = Field(default=None, min_length=3)
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
 
@@ -45,8 +51,10 @@ class OrcamentoPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     id: int
-    email: EmailStr
-    full_name: str | None = None
+    name: str
+    value: Integer
+    date: str | None = None
+    desc: str
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = None
     role: RolePublic # O perfil agora é um objeto aninhado
