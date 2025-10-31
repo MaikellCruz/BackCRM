@@ -29,12 +29,14 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
     """Endpoint para buscar uma categoria pelo ID."""
     return category_service.get_category_by_id(db, category_id=category_id)
 
-@router.put("/{category_id}", response_model=category_model.categoryPublic)
+@router.put("/{category_id}", response_model=category_model.CategoryPublic)
 def update_category(category_id: int, category: category_model.CategoryUpdate, db: Session = Depends(get_db)):
     """Endpoint para atualizar uma categoria."""
     return category_service.update_existing_category(db=db, category_id=category_id, category_in=category)
 
 @router.delete("/{category_id}", response_model=category_model.CategoryPublic)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
-    """Endpoint para deletar uma categoria."""
-    return category_service.delete_category_by_id(db=db, category_id=category_id)
+    category_to_delete = category_service.get_category_by_id(db, category_id)
+    category_data = category_model.CategoryPublic.model_validate(category_to_delete)
+    category_service.delete_category_by_id(db=db, category_id=category_id)
+    return category_data

@@ -14,47 +14,44 @@ class Orcamento(Base):
     __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
-    value = Column(Integer, unique=True, index=True)
-    hashed_password = Column(String)
-    date = Column(Integer, unique=True, index=True)
+    name: Column(String, index=True, nullable=True)
+    value = Column(Float, nullable=False, default=0.0)
+    date = Column(DateTime(timezone=True), server_default=func.now())
     descr= Column(String, index=True, nullable=True)
-    #category = Column(String, index=True, nullable=True)
-    profile_image_url = Column(String, nullable=True)
-    profile_image_base64 = Column(Text, nullable=True)
-    # Chave estrangeira que aponta para a tabela 'roles'
-    role_id = Column(Integer, ForeignKey("roles.id"))
-    # Cria a relação para que possamos acessar o objeto Role a partir de um Orcamento
-    role = relationship("Role")
+
+    #  Relacionamentos
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    category_id = Column(Integer, ForeignKey("categorys.id"), nullable=False)
+
+    client = relationship("Client", back_populates="orcamentos")
+    category = relationship("Category", back_populates="orcamentos")
 
 # ==================================
 # SCHEMAS (Pydantic)
 # ==================================
 class OrcamentoCreate(BaseModel):
     name: str = Field(min_length=8)
-    value: Integer | None = Field(default=None, min_length=3)
-    password: str = Field(min_length=8)
-    date: str | None = Field(default=None, min_length=3)
+    value:float = Field(default=None, min_length=3)
+    date: date = Field(..., example="2025-10-30")
     descr: str | None = Field(default=None, min_length=3)
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
-    role_id: int = Field(description="ID do role a ser associado ao usuário")
+    client_id: int = Field(..., example=1)
+    category_id: int = Field(..., example=3)
 
 class OrcamentoUpdate(BaseModel):
     name: str = Field(min_length=8)
-    value: Integer | None = Field(default=None, min_length=3)
-    date: str | None = Field(default=None, min_length=3)
+    value:float = Field(default=None, min_length=3)
+    date: date = Field(..., example="2025-10-30")
     descr: str | None = Field(default=None, min_length=3)
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
+    client_id: int = Field(..., example=1)
+    category_id: int = Field(..., example=3)
 
 class OrcamentoPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     id: int
     name: str
-    value: Integer
-    date: str | None = None
-    desc: str
-    profile_image_url: Optional[str] = None
-    profile_image_base64: Optional[str] = None
-    role: RolePublic # O perfil agora é um objeto aninhado
+    value: float
+    date: date | None = None
+    descr: str
+    client_id: int
+    category_id: int

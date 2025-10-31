@@ -32,14 +32,11 @@ def create_category(db: Session, category: category_model.CategoryCreate, role_i
     """
     Cria uma nova categoria no banco de dados.
     """
-    # Agora a senha é hasheada corretamente
-    hashed_password = get_password_hash(category.password)
 
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
     db_category = category_model.Category(
         nome=category.nome, 
-        hashed_password=hashed_password, 
         tipo=category.tipo,
         descricao=category.descrição,
         role_id=role_id
@@ -56,11 +53,7 @@ def update_category(db: Session, db_category: category_model.Category, category_
     """Atualiza os dados de uma categoria existente."""
     update_data = category_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():
-        # Se o campo for 'password', precisa mapear para 'hashed_password' no modelo SQLAlchemy
-        if key == "password":
-            setattr(db_category, "hashed_password", value) # AVISO: A senha ainda não está sendo hasheada!
-        else:
-            setattr(db_category, key, value) # Atualiza cada campo no objeto do banco (db_category).
+        setattr(db_category, key, value)
 
     db.add(db_category) # Adiciona o objeto modificado à sessão.
     db.commit()     # Salva as alterações.
@@ -74,3 +67,5 @@ def delete_category(db: Session, db_category: category_model.Category):
     db.delete(db_category) # Marca o objeto para deleção.
     db.commit()        # Efetiva a deleção no banco.
     return db_category
+
+

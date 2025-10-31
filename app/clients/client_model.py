@@ -10,15 +10,14 @@ from typing import Optional
 # MODELO DA TABELA (SQLAlchemy)
 # ==================================
 class Client(Base):
-    __tablename__ = "users"
+    __tablename__ = "Clients"
     __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
     full_name = Column(String, index=True, nullable=True)
     enterprise_name = Column(String, index=True, nullable=True)
-    cel_number = Column(Integer, index=True, nullable=True)
+    cel_number = Column(String, index=True, nullable=True)
     adress = Column(String, index=True, nullable=True)
     #category = Column(String, index=True, nullable=True)
     profile_image_url = Column(String, nullable=True)
@@ -35,9 +34,9 @@ class ClientCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     full_name: str | None = Field(default=None, min_length=3)
-    enterprise_name = Column(String, index=True, nullable=True)
-    cel_number = Column(Integer, index=True, nullable=True)
-    adress = Column(String, index=True, nullable=True)
+    enterprise_name = str | None = Field(default=None, min_length=3)
+    cel_number: Optional[str] = None
+    adress = Optional[str] = None
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
     role_id: int = Field(description="ID do role a ser associado ao client")
@@ -45,9 +44,9 @@ class ClientCreate(BaseModel):
 class ClientUpdate(BaseModel):
     email: EmailStr
     full_name: str | None = Field(default=None, min_length=3)
-    enterprise_name = Column(String, index=True, nullable=True)
-    cel_number = Column(Integer, index=True, nullable=True)
-    adress = Column(String, index=True, nullable=True)
+    enterprise_name: str | None = Field(default=None, min_length=3)
+    cel_number: Optional[str] = None
+    address: Optional[str] = None
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
 
@@ -58,8 +57,8 @@ class ClientPublic(BaseModel):
     email: EmailStr
     full_name: str | None = None
     enterprise_name: str | None = None
-    cel_number: Integer | None = None
-    adress: str | None = None
+    cel_number: Optional[str] = None
+    address: Optional[str] = None
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = None
     role: RolePublic # O perfil agora é um objeto aninhado

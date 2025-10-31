@@ -26,20 +26,17 @@ def get_clients(db: Session):
     """
     return db.query(client_model.Client).all()
 
+
 # --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
 
 def create_client(db: Session, client: client_model.ClientCreate, role_id: int = None):
     """
     Cria um novo cliente no banco de dados.
     """
-    # Agora a senha é hasheada corretamente
-    hashed_password = get_password_hash(client.password)
-
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
     db_client = client_model.Client(
         email=client.email, 
-        hashed_password=hashed_password, 
         full_name=client.full_name,
         enterprise_name=client.enterprise_name,
         cel_number=client.cel_number,
@@ -60,11 +57,7 @@ def update_client(db: Session, db_client: client_model.Client, client_in: client
     """Atualiza os dados de um cliente existente."""
     update_data = client_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():
-        # Se o campo for 'password', precisa mapear para 'hashed_password' no modelo SQLAlchemy
-        if key == "password":
-            setattr(db_client, "hashed_password", value) # AVISO: A senha ainda não está sendo hasheada!
-        else:
-            setattr(db_client, key, value) # Atualiza cada campo no objeto do banco (db_client).
+        setattr(db_client, key, value) # Atualiza cada campo no objeto do banco (db_client).
 
     db.add(db_client) # Adiciona o objeto modificado à sessão.
     db.commit()     # Salva as alterações.

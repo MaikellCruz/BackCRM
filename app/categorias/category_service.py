@@ -6,23 +6,11 @@ from . import category_model, category_repository
 from utils.image_processor import process_image_base64
 
 def create_new_category(db: Session, category: category_model.CategoryCreate):
-    db_category = category_repository.get_category_by_name(db, email=category.nome)
+    db_category = category_repository.get_category_by_name(db, nome=category.nome)
     if db_category:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nome already registered")
 
-    # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
-    try:
-        processed_image = process_image_base64(category.profile_image_base64)
-        # Cria uma cópia dos dados do usuário com a imagem processada
-        category_data = category.model_copy()
-        category_data.profile_image_base64 = processed_image
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail=f"Erro no processamento da imagem: {e}"
-        )
-
-    return category_repository.create_category(db=db, category=category_data, role_id=category.role_id)
+    return category_repository.create_category(db=db, category=category, role_id=category.role_id)
 
 def get_all_categorys(db: Session):
     """Serviço para listar todas as categorias. Neste caso, apenas repassa a chamada."""
@@ -39,23 +27,7 @@ def get_category_by_id(db: Session, category_id: int):
 def update_existing_category(db: Session, category_id: int, category_in: category_model.CategoryUpdate):
     """Serviço para atualizar uma categoria, com tratamento de erro."""
     db_category = get_category_by_id(db, category_id) # Reutiliza a lógica para buscar e checar se o usuário existe.
-    
-    # Processa a imagem se fornecida (converte AVIF para JPEG automaticamente)
-    if category_in.profile_image_base64:
-        try:
-            processed_image = process_image_base64(category_in.profile_image_base64)
-            # Cria uma cópia dos dados com a imagem processada
-            category_data = category_in.model_copy()
-            category_data.profile_image_base64 = processed_image
-        except ValueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"Erro no processamento da imagem: {e}"
-            )
-    else:
-        category_data = category_in
-    
-    return category_repository.update_category(db=db, db_category=db_category, category_in=category_data)
+    return category_repository.update_category(db=db, db_category=db_category, category_in=category_in)
 
 def delete_category_by_id(db: Session, category_id: int):
     """Serviço para deletar uma categoria, com tratamento de erro."""

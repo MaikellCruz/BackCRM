@@ -38,3 +38,15 @@ def update_client(client_id: int, client: client_model.ClientUpdate, db: Session
 def delete_client(client_id: int, db: Session = Depends(get_db)):
     """Endpoint para deletar um cliente."""
     return client_service.delete_client_by_id(db=db, client_id=client_id)
+
+@router.delete("/{client_id}", response_model=client_model.ClientPublic)
+def delete_client(client_id: int, db: Session = Depends(get_db)):
+    """Endpoint para deletar um cliente."""
+    # Busca o cliente antes de excluir, garantindo que o relacionamento role está carregado
+    client_to_delete = client_service.get_client_by_id(db, client_id)
+    # Cria uma cópia dos dados para retorno
+    client_data = client_model.ClientPublic.model_validate(client_to_delete)
+    # Exclui o usuário
+    client_service.delete_client_by_id(db=db, client_id=client_id)
+    # Retorna o objeto excluído com status 200
+    return client_data
