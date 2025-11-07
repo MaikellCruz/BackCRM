@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from . import category_model, category_repository
+from app.categorias import category_model, category_repository
 from utils.image_processor import process_image_base64
 
 def create_new_category(db: Session, category: category_model.CategoryCreate):

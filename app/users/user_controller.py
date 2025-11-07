@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
 from database import SessionLocal, get_db
-from . import user_service, user_model
+from app.users import user_service, user_model
 from auth.auth_service import get_current_user
 
 router = APIRouter(

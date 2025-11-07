@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from . import client_repository, client_model
+from app.clients import client_repository, client_model
 from utils.image_processor import process_image_base64
 
 def create_new_client(db: Session, client: client_model.ClientCreate):

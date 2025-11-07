@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
 from database import SessionLocal, get_db
-from . import orcamento_service, orcamento_model
-from auth.auth_service import get_current_orcamento
+from app.orcamentos import orcamento_service, orcamento_model
+from auth.auth_service import get_current_user
 
 router = APIRouter(
     prefix="/orcamentos",
-    tags=["orcamentos"],
-    dependencies=[Depends(get_current_orcamento)]
+    tags=["Orcamentos"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/", response_model=orcamento_model.OrcamentoPublic, status_code=status.HTTP_201_CREATED)
@@ -28,6 +28,10 @@ def read_orcamentos(db: Session = Depends(get_db)):
 def read_orcamento(orcamento_id: int, db: Session = Depends(get_db)):
     """Endpoint para buscar um orcamento pelo ID."""
     return orcamento_service.get_orcamento_by_id(db, orcamento_id=orcamento_id)
+
+@router.get("/client/{client_id}", response_model=list[orcamento_model.OrcamentoPublic])
+def get_orcamento_by_client(client_id: int, db: Session = Depends(get_db)):
+    return orcamento_service.get_orcamento_by_client(db, client_id=client_id)
 
 @router.put("/{orcamento_id}", response_model=orcamento_model.OrcamentoPublic)
 def update_orcamento(orcamento_id: int, orcamento: orcamento_model.OrcamentoUpdate, db: Session = Depends(get_db)):

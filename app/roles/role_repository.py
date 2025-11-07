@@ -1,6 +1,6 @@
 # roles/role_repository.py
 from sqlalchemy.orm import Session
-from . import role_model
+from app.roles import role_model
 
 def get_role_by_name(db: Session, name: str):
     return db.query(role_model.Role).filter(role_model.Role.name == name).first()

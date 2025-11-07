@@ -1,5 +1,5 @@
 # Orcamentos/Orcamento_model.py
-from sqlalchemy import Column, Integer, String, ForeignKey, Text
+from sqlalchemy import Column, DateTime, Float, Integer, String, ForeignKey, Text, func
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 from database import Base
@@ -14,7 +14,7 @@ class Orcamento(Base):
     __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
-    name: Column(String, index=True, nullable=True)
+    name = Column(String, index=True, nullable=True)
     value = Column(Float, nullable=False, default=0.0)
     date = Column(DateTime(timezone=True), server_default=func.now())
     descr= Column(String, index=True, nullable=True)

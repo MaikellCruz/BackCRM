@@ -1,7 +1,7 @@
 # app/orcamentos/orcamento_repository.py
 
 from sqlalchemy.orm import Session
-from . import orcamento_model
+from app.orcamentos import orcamento_model
 from security import get_password_hash
 
 # --- FUNÇÕES DE LEITURA (READ) ---
@@ -15,16 +15,15 @@ def get_orcamento(db: Session, orcamento_id: int):
     """
     return db.query(orcamento_model.orcamento).filter(orcamento_model.Orcamento.id == orcamento_id).first()
 
-def get_orcamento_by_email(db: Session, email: str):
-    """Busca um único orcamento pelo seu e-mail."""
-    return db.query(orcamento_model.orcamento).filter(orcamento_model.Orcamento.email == email).first()
-
-def get_orcamentos(db: Session):
+def get_all(db: Session):
     """
     Busca todos os orcamentos cadastrados no banco de dados.
     .all(): Retorna uma lista com todos os resultados da consulta.
     """
     return db.query(orcamento_model.orcamento).all()
+
+def get_by_client(self, client_id: int):
+    return self.db.query(orcamento_model.orcamento).filter(orcamento_model.Orcamento.client.id == client_id).all()
 
 # --- FUNÇÃO DE CRIAÇÃO (CREATE) ---
 
@@ -32,15 +31,12 @@ def create_orcamento(db: Session, orcamento: orcamento_model.OrcamentoCreate, ro
     """
     Cria um novo orcamento no banco de dados.
     """
-    # Agora a senha é hasheada corretamente
-    hashed_password = get_password_hash(orcamento.password)
 
     # Cria uma instância do modelo SQLAlchemy com os dados do schema Pydantic.
     # É aqui que os dados da API são transformados em um objeto que pode ser salvo no banco.
     db_orcamento = orcamento_model.Orcamento(
         name=orcamento.name,
         value=orcamento.value, 
-        hashed_password=hashed_password, 
         date=orcamento.date,
         descr=orcamento.descr,
         profile_image_url=orcamento.profile_image_url,
@@ -59,11 +55,7 @@ def update_orcamento(db: Session, db_orcamento: orcamento_model.Orcamento, orcam
     """Atualiza os dados de um orcamento existente."""
     update_data = orcamento_in.model_dump(exclude_unset=True) # Pega só os campos que foram enviados na requisição.
     for key, value in update_data.items():
-        # Se o campo for 'password', precisa mapear para 'hashed_password' no modelo SQLAlchemy
-        if key == "password":
-            setattr(db_orcamento, "hashed_password", value) # AVISO: A senha ainda não está sendo hasheada!
-        else:
-            setattr(db_orcamento, key, value) # Atualiza cada campo no objeto do banco (db_orcamento).
+        setattr(db_orcamento, key, value) # Atualiza cada campo no objeto do banco (db_orcamento).
 
     db.add(db_orcamento) # Adiciona o objeto modificado à sessão.
     db.commit()     # Salva as alterações.

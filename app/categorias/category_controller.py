@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
 from database import SessionLocal, get_db
-from . import category_model, category_service
-from auth.auth_service import get_current_category
+from app.categorias import category_model, category_service
+from auth.auth_service import get_current_user
 
 router = APIRouter(
     prefix="/category",
     tags=["Categorys"],
-    dependencies=[Depends(get_current_category)]
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/", response_model=category_model.CategoryPublic, status_code=status.HTTP_201_CREATED)

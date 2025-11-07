@@ -1,7 +1,7 @@
 # app/categorys/category_repository.py
 
 from sqlalchemy.orm import Session
-from . import category_model
+from app.categorias import category_model
 from security import get_password_hash
 
 # --- FUNÇÕES DE LEITURA (READ) ---

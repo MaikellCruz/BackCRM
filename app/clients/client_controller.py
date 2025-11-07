@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
 from database import SessionLocal, get_db
-from . import client_service, client_model
-from auth.auth_service import get_current_client
+from app.clients import client_service, client_model
+from auth.auth_service import get_current_user
 
 router = APIRouter(
     prefix="/clients",
     tags=["Clients"],
-    dependencies=[Depends(get_current_client)]
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/", response_model=client_model.ClientPublic, status_code=status.HTTP_201_CREATED)

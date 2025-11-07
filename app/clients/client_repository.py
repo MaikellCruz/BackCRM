@@ -1,8 +1,7 @@
 # app/clients/client_repository.py
 
 from sqlalchemy.orm import Session
-from . import client_model
-from security import get_password_hash
+from app.clients import client_model
 
 # --- FUNÇÕES DE LEITURA (READ) ---
 
