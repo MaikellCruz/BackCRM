@@ -23,7 +23,13 @@ APP_PROFILE = os.getenv("APP_PROFILE", "DEV")
 
 # Criar tabelas apenas em desenvolvimento
 if APP_PROFILE == "DEV":
+    from app.users.user_model import User
+    from app.roles.role_model import Role 
+    print("--- Tentando apagar TUDO do banco de dados ---")
+    Base.metadata.drop_all(bind=engine) 
+    print("--- APAGOU (se não deu erro)! Tentando criar novamente ---")
     Base.metadata.create_all(bind=engine)
+    print("--- Criação concluída. ---")
 
 # 1. Cria a instância principal da aplicação
 app = FastAPI(

@@ -20,8 +20,8 @@ class Orcamento(Base):
     descr= Column(String, index=True, nullable=True)
 
     #  Relacionamentos
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
-    category_id = Column(Integer, ForeignKey("categorys.id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("Clients.id"), nullable=False)
+    category_id = Column(Integer, ForeignKey("Categorys.id"), nullable=False)
 
     client = relationship("Client", back_populates="orcamentos")
     category = relationship("Category", back_populates="orcamentos")
@@ -32,7 +32,7 @@ class Orcamento(Base):
 class OrcamentoCreate(BaseModel):
     name: str = Field(min_length=8)
     value:float = Field(default=None, min_length=3)
-    date: date = Field(..., example="2025-10-30")
+    date: int = Field(..., example="2025-10-30")
     descr: str | None = Field(default=None, min_length=3)
     client_id: int = Field(..., example=1)
     category_id: int = Field(..., example=3)
@@ -40,7 +40,7 @@ class OrcamentoCreate(BaseModel):
 class OrcamentoUpdate(BaseModel):
     name: str = Field(min_length=8)
     value:float = Field(default=None, min_length=3)
-    date: date = Field(..., example="2025-10-30")
+    date: int = Field(..., example="2025-10-30")
     descr: str | None = Field(default=None, min_length=3)
     client_id: int = Field(..., example=1)
     category_id: int = Field(..., example=3)
@@ -51,7 +51,7 @@ class OrcamentoPublic(BaseModel):
     id: int
     name: str
     value: float
-    date: date | None = None
+    date: int | None = None
     descr: str
     client_id: int
     category_id: int
