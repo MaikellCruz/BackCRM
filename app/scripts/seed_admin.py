@@ -6,13 +6,14 @@ Uso:
 Observação: usa a senha 'admin' (plain) e armazena o hash no banco.
 """
 
-from roles.role_model import Role
-from users.user_model import User
-from security import get_password_hash
+from app.roles.role_model import Role
+from app.users.user_model import User
+from app.security import get_password_hash
 from passlib.exc import MissingBackendError
 import sys
+import argparse
 
-from database import SessionLocal
+from app.database import SessionLocal
 
 
 def seed_admin(email: str = "admin@example.com", password: str = "admin"):
