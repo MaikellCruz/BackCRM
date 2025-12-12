@@ -10,7 +10,7 @@ from app.auth.auth_service import get_current_user
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
-    dependencies=[Depends(get_current_user)]
+    #dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/", response_model=user_model.UserPublic, status_code=status.HTTP_201_CREATED)

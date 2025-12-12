@@ -22,10 +22,12 @@ class Client(Base):
     profile_image_url = Column(String, nullable=True)
     profile_image_base64 = Column(Text, nullable=True)
     # Chave estrangeira que aponta para a tabela 'roles'
-    role_id = Column(Integer, ForeignKey("roles.id"))
+    #role_id = Column(Integer, ForeignKey("roles.id"))
     # Cria a relação para que possamos acessar o objeto Role a partir de um User
-    role = relationship("Role")
-
+    #role = relationship("Role")
+    
+    category_id = Column(Integer, ForeignKey("Categorys.id"))
+    
     # Relacionamentos
     category = relationship("Category", back_populates="clients")
     orcamentos = relationship("Orcamento", back_populates="client", cascade="all, delete-orphan")
@@ -42,7 +44,7 @@ class ClientCreate(BaseModel):
     adress : Optional[str] = None
     profile_image_url: Optional[str] = None
     profile_image_base64: Optional[str] = Field(None, description="Imagem em Base64")
-    role_id: int = Field(description="ID do role a ser associado ao client")
+    #role_id: int = Field(description="ID do role a ser associado ao client")
     orcamento_id: int = Field(..., example=1)
     category_id: int = Field(..., example=3)
 
