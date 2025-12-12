@@ -3,9 +3,9 @@
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
 from typing import List
-from database import SessionLocal, get_db
+from app.database import SessionLocal, get_db
 from app.categorias import category_model, category_service
-from auth.auth_service import get_current_user
+from app.auth.auth_service import get_current_user
 
 router = APIRouter(
     prefix="/category",

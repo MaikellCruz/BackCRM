@@ -4,11 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Adiciona a pasta app ao Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
-
 # Importa primeiro a base e engine para evitar problemas de ordem
-from database import engine, Base
+from app.database import engine, Base
 
 # Depois importa os controllers
 from app.users import user_controller
@@ -36,6 +33,8 @@ app = FastAPI(
     title="API do Meu Projeto",
     version="0.1.0"
 )
+
+
 
 # Configuração de CORS baseada no ambiente
 if APP_PROFILE == "DEV":

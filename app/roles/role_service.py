@@ -1,7 +1,7 @@
 # roles/role_service.py
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.roles import role_repository, role_model
+from . import role_repository, role_model
 
 def create_new_role(db: Session, role: role_model.RoleCreate):
     db_role = role_repository.get_role_by_name(db, name=role.name)

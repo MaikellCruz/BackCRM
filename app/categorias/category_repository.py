@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from app.categorias import category_model
-from security import get_password_hash
+from app.security import get_password_hash
 
 # --- FUNÇÕES DE LEITURA (READ) ---
 

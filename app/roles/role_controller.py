@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from database import get_db
-from app.roles import role_service, role_model
-from auth.auth_service import require_role, get_current_user
+from app.database import get_db
+from . import role_service, role_model
+from app.auth.auth_service import require_role, get_current_user
 
 router = APIRouter(
     prefix="/roles",
